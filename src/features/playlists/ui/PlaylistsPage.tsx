@@ -49,11 +49,14 @@ export const PlaylistsPage = () => {
 
               {
                 isEditing
-                  ? <EditPlaylistForm playlistId={playlistId} setPlaylistId={setPlaylistId}
+                  ? <EditPlaylistForm playlistId={playlistId}
+                                      setPlaylistId={setPlaylistId}
                                       editPlaylist={editPlaylistHandler}
-                                      register={register} handleSubmit={handleSubmit}
+                                      register={register}
+                                      handleSubmit={handleSubmit}
                   />
-                  : <PlaylistItem playlist={playlist} deletePlaylistHandler={deletePlaylistHandler}
+                  : <PlaylistItem playlist={playlist}
+                                  deletePlaylistHandler={deletePlaylistHandler}
                                   editPlaylistHandler={editPlaylistHandler}/>
               }
             </div>

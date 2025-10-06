@@ -5,6 +5,7 @@ import type {
   UpdatePlaylistArgs
 } from "@/features/playlists/api/playlistsApi.types.ts";
 import {baseApi} from "@/app/api/baseApi.ts";
+import type {Images} from "@/common/types";
 
 export const playlistsApi = baseApi.injectEndpoints({
   endpoints: (build) =>
@@ -38,11 +39,37 @@ export const playlistsApi = baseApi.injectEndpoints({
         invalidatesTags:['Playlist'],
         query: ({playlistId, body}) => ({
           method: 'put',
-          url: `/playlists/${playlistId}`,
+          url: `playlists/${playlistId}`,
           body
         }),
+      }),
+      uploadPlaylistsCover: build.mutation<Images, {playlistId:string, file:File}>({
+        invalidatesTags:['Playlist'],
+        query: ({playlistId, file}) => {
+          const formData=new FormData()
+          formData.append('file',file)
+          return ({
+            method: 'post',
+            url: `playlists/${playlistId}/images/main`,
+            body:formData
+          });
+        },
+      }),
+      removePlaylistsCover: build.mutation<void, { playlistId: string }>({
+        invalidatesTags:['Playlist'],
+        query: ({playlistId}) => ({
+            method: 'delete',
+            url: `playlists/${playlistId}/images/main`,
+          }),
       }),
     })
 })
 
-export const {useFetchPlaylistsQuery, useCreatePlaylistsMutation, useRemovePlaylistsMutation, useUpdatePlaylistsMutation} = playlistsApi
+export const {
+  useFetchPlaylistsQuery,
+  useCreatePlaylistsMutation,
+  useRemovePlaylistsMutation,
+  useUpdatePlaylistsMutation,
+  useUploadPlaylistsCoverMutation,
+  useRemovePlaylistsCoverMutation,
+} = playlistsApi
