@@ -12,7 +12,6 @@ type Props = {
 
 export const EditPlaylistForm = ({playlistId, setPlaylistId, editPlaylist, register, handleSubmit}: Props) => {
 
-
   const [updatePlaylist] = useUpdatePlaylistsMutation()
 
   const onSubmit: SubmitHandler<UpdatePlaylistArgs> = body => {
