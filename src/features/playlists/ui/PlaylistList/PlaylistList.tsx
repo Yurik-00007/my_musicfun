@@ -7,7 +7,7 @@ import s from './PlaylistList.module.css'
 import {useState} from "react";
 
 type Props = {
-  playlists:  PlaylistData[]
+  playlists: PlaylistData[]
   isPlaylistsLoading: boolean
 }
 
@@ -44,7 +44,6 @@ const PlaylistList = ({isPlaylistsLoading, playlists}: Props) => {
       {playlists.map(playlist => {
 
         const isEditing = playlistId === playlist.id
-
         return (
           <div className={s.item} key={playlist.id}>
             {
