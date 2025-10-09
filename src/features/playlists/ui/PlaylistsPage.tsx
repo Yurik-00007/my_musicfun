@@ -13,18 +13,27 @@ export const PlaylistsPage = () => {
 
   const debounceSearch = useDebounceValue(search)
 
-  const {data, isLoading} = useFetchPlaylistsQuery({search: debounceSearch, pageNumber: currentPage,
-    pageSize })
+  const {data, isLoading} = useFetchPlaylistsQuery(
+    {search: debounceSearch, pageNumber: currentPage, pageSize},
+    // {refetchOnFocus: true}//точечный запрос: будут работать только этот запрос, в api запрос не сработает.
+    // {refetchOnReconnect: true}//точечный запрос: будут работать только этот запрос, в api запрос не сработает.
 
-const changePageSizeHandler=(size:number)=>{
-  setPageSize(size)
-  setCurrentPage(1)
-}
+    //Polling позволяет автоматически повторять запросы через определённые интервалы времени для поддержания актуальности данных.
+    {
+      pollingInterval: 3000, // каждые 3 секунды
+      skipPollingIfUnfocused: true, // не опрашивать, если вкладка не активна
+    }
+  )
 
-const searchPlayListHandler = (e: ChangeEvent<HTMLInputElement>) => {
-  setSearch(e.currentTarget.value)
-  setCurrentPage(1)
-}
+  const changePageSizeHandler = (size: number) => {
+    setPageSize(size)
+    setCurrentPage(1)
+  }
+
+  const searchPlayListHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.currentTarget.value)
+    setCurrentPage(1)
+  }
 
   return (
     <div className={s.container}>
