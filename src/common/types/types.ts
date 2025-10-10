@@ -19,3 +19,6 @@ export type Cover = {
   fileSize: number
   url: string
 }
+
+
+
