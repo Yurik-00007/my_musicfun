@@ -42,6 +42,7 @@ export const TracksPage = () => {
   // {id: '50587ef5-d06d-4d3e-9e81-821d20f30d2e', type: 'tracks', attributes: {…}, relationships: {…}}
   // {id: '8c81e17a-281a-4015-9066-51cf3266ad7a', type: 'tracks', attributes: {…}, relationships: {…}}
   // ]
+  {/*{data?.pages[0].data.map(track => {*/}
 
   /*
     const observerRef = useRef<HTMLDivElement>(null)

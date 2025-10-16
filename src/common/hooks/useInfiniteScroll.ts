@@ -28,6 +28,10 @@ export function useInfiniteScroll(props:Props) {
   useEffect(() => {
     // IntersectionObserver отслеживает элементы и сообщает, насколько они видны во viewport
     // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+    const currentObserverRef = observerRef.current
+    if (!currentObserverRef) return
+
+
     const observer = new IntersectionObserver(
       entries => {
         // entries - наблюдаемый элемент
@@ -42,7 +46,6 @@ export function useInfiniteScroll(props:Props) {
       }
     )
 
-    const currentObserverRef = observerRef.current
     if (currentObserverRef) {
       // начинает наблюдение за элементом
       observer.observe(currentObserverRef)
