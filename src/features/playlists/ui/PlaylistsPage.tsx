@@ -9,7 +9,7 @@ import PlaylistList from "@/features/playlists/ui/PlaylistList/PlaylistList.tsx"
 export const PlaylistsPage = () => {
   const [search, setSearch] = useState<string>('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(20)
+  const [pageSize, setPageSize] = useState(2)
 
   const debounceSearch = useDebounceValue(search)
 
@@ -19,11 +19,18 @@ export const PlaylistsPage = () => {
     // {refetchOnReconnect: true}//точечный запрос: будут работать только этот запрос, в api запрос не сработает.
 
     //Polling позволяет автоматически повторять запросы через определённые интервалы времени для поддержания актуальности данных.
-    {
-      pollingInterval: 3000, // каждые 3 секунды
-      skipPollingIfUnfocused: true, // не опрашивать, если вкладка не активна
-    }
+    /*
+        {
+          pollingInterval: 3000, // каждые 3 секунды
+          skipPollingIfUnfocused: true, // не опрашивать, если вкладка не активна
+        }
+    */
   )
+
+  //isLoading → начальная загрузка, isFetching → любая активная загрузка.
+  // console.log({isLoading, isFetching, status})
+  //Когда status = "pending" или isFetching = true — data остаётся со старыми данными,а currentData будет undefined, пока новый запрос не завершится.
+  // console.log({data, currentData, status})
 
   const changePageSizeHandler = (size: number) => {
     setPageSize(size)
@@ -35,10 +42,15 @@ export const PlaylistsPage = () => {
     setCurrentPage(1)
   }
 
+  if(isLoading){
+    return (
+      <h1>Skeleton loading ...</h1>
+    )
+  }
   return (
     <div className={s.container}>
       <h1>Playlists page</h1>
-      <CreatePlaylistForm/>
+      <CreatePlaylistForm onSuccess={()=>setCurrentPage(1)}/>
       <input
         type="search"
         placeholder={'Search playlist by title'}

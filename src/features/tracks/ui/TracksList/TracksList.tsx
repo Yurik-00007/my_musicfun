@@ -6,9 +6,9 @@ type Props={
 }
 
 export const TracksList = ({tracks}:Props) => {
+  console.log('tracks ids:', tracks.map(t => t.id))
   return (
     <div className={s.list}>
-      {/*{data?.pages[0].data.map(track => {*/}
       {tracks.map(track => {
         const {title, user, attachments} = track.attributes
 
