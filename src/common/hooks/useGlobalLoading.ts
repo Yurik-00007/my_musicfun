@@ -8,9 +8,34 @@ const excludedEndpoints=[playlistsApi.endpoints.fetchPlaylists.name,tracksApi.en
 export const useGlobalLoading = () => {
   return useSelector((state: RootState) => {
     // debugger
+    // console.log(state)
+/*
+    baseApi : {
+    config : {online: true, focused: true, middlewareRegistered: false, refetchOnFocus: false, refetchOnReconnect:
+    false, …}
+    mutations : {}
+    provided : {tags: {…}, keys: {…}}
+    queries :  {fetchPlaylists({"pageNumber":1,"pageSize":2,"search":""}): {…}}
+    subscriptions : {}
+    }
+ */
+
     // Получаем все активные запросы из RTK Query API
     const queries = Object.values(state.baseApi.queries || {})
     const mutations = Object.values(state.baseApi.mutations || {})
+
+    //queries :{
+    //fetchPlaylists({"pageNumber":1,"pageSize":2,"search":""}) : {
+    // Получаем массив queries и mutations объектов. Берем из объекта его значения и помещаем в массив
+    // data : {data: Array(2), meta: {…}}
+    // endpointName : "fetchPlaylists"
+    // fulfilledTimeStamp : 1760949013823
+    // originalArgs : {search: '', pageNumber: 1, pageSize: 2}
+    // requestId : "Y0LdOfhCaz2hJh1mfktTf"
+    // startedTimeStamp : 1760949011422
+    // status : "fulfilled"
+    //}
+    //}
 
     // Проверяем, есть ли активные запросы (статус 'pending')
     const hasActiveQueries = queries.some(query => {
@@ -35,6 +60,7 @@ export const useGlobalLoading = () => {
       if (query?.status !== 'pending') {
         return
       }
+      // debugger
         if (excludedEndpoints.includes(query.endpointName)) {
           const completedQueries = queries.filter(query => query?.status === 'fulfilled')
           return completedQueries.length > 0

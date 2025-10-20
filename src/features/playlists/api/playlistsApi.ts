@@ -11,7 +11,7 @@ const playlistsApi = baseApi.injectEndpoints({
   endpoints: (build) =>
     ({
       fetchPlaylists: build.query<PlaylistsResponse, FetchPlaylistsArgs>({
-        providesTags:['Playlist'],
+        providesTags: ['Playlist'],
         query: (params) => ({
           url: `playlists`,
           params
@@ -27,7 +27,7 @@ const playlistsApi = baseApi.injectEndpoints({
         */
       }),
       createPlaylists: build.mutation<{ data: PlaylistData }, CreatePlaylistArgs>({
-        invalidatesTags:['Playlist'],
+        invalidatesTags: ['Playlist'],
         query: (body) => ({
           method: 'post',
           url: `playlists`,
@@ -35,38 +35,38 @@ const playlistsApi = baseApi.injectEndpoints({
         }),
       }),
       removePlaylists: build.mutation<void, string>({
-        invalidatesTags:['Playlist'],
+        invalidatesTags: ['Playlist'],
         query: (playlistId) => ({
           method: 'delete',
           url: `/playlists/${playlistId}`,
         }),
       }),
       updatePlaylists: build.mutation<void, { playlistId: string; body: UpdatePlaylistArgs }>({
-        invalidatesTags:['Playlist'],
+        invalidatesTags: ['Playlist'],
         query: ({playlistId, body}) => ({
           method: 'put',
           url: `playlists/${playlistId}`,
           body
         }),
       }),
-      uploadPlaylistsCover: build.mutation<Images, {playlistId:string, file:File}>({
-        invalidatesTags:['Playlist'],
+      uploadPlaylistsCover: build.mutation<Images, { playlistId: string, file: File }>({
+        invalidatesTags: ['Playlist'],
         query: ({playlistId, file}) => {
-          const formData=new FormData()
-          formData.append('file',file)
+          const formData = new FormData()
+          formData.append('file', file)
           return ({
             method: 'post',
             url: `playlists/${playlistId}/images/main`,
-            body:formData
+            body: formData
           });
         },
       }),
       removePlaylistsCover: build.mutation<void, { playlistId: string }>({
-        invalidatesTags:['Playlist'],
+        invalidatesTags: ['Playlist'],
         query: ({playlistId}) => ({
-            method: 'delete',
-            url: `playlists/${playlistId}/images/main`,
-          }),
+          method: 'delete',
+          url: `playlists/${playlistId}/images/main`,
+        }),
       }),
     })
 })

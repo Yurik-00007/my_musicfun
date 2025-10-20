@@ -13,7 +13,7 @@ export const PlaylistsPage = () => {
 
   const debounceSearch = useDebounceValue(search)
 
-  const {data, isLoading} = useFetchPlaylistsQuery(
+  const {data, isLoading, isError, error} = useFetchPlaylistsQuery(
     {search: debounceSearch, pageNumber: currentPage, pageSize},
     // {refetchOnFocus: true}//точечный запрос: будут работать только этот запрос, в api запрос не сработает.
     // {refetchOnReconnect: true}//точечный запрос: будут работать только этот запрос, в api запрос не сработает.
@@ -27,10 +27,42 @@ export const PlaylistsPage = () => {
     */
   )
 
+  //
+  console.log({error, isError})
+  //error : {
+  // data : {
+  // message: "ENOENT: no such file or directory, stat
+  // '/home/nod…st/spotifun/dist/apps/spotifun/public/index.html'",
+  // error: 'Not Found',
+  // statusCode: 404
+  // }
+  // status : 404
+  // }
+  // isError : true
+
   //isLoading → начальная загрузка, isFetching → любая активная загрузка.
   // console.log({isLoading, isFetching, status})
   //Когда status = "pending" или isFetching = true — data остаётся со старыми данными,а currentData будет undefined, пока новый запрос не завершится.
   // console.log({data, currentData, status})
+
+/*
+  useEffect(() => {
+    if (error) {
+      if ('status' in error) {
+        // FetchBaseQueryError
+        // const errMsg = 'error' in error ? error.error : JSON.stringify(error.data)
+        const errMsg = 'error' in error ? error.error : (error.data as { error: string }).error
+          || (error.data as { message: string }).message || 'Some error occurred'
+        toast(errMsg, {type: "error", theme: 'colored'});
+      } else {
+        // SerializedError
+        const errMsg = error.message || 'Some error occurred'
+        toast(errMsg, {type: "error", theme: 'colored'});
+      }
+    }
+  },[error])
+*/
+
 
   const changePageSizeHandler = (size: number) => {
     setPageSize(size)
@@ -42,7 +74,7 @@ export const PlaylistsPage = () => {
     setCurrentPage(1)
   }
 
-  if(isLoading){
+  if (isLoading) {
     return (
       <h1>Skeleton loading ...</h1>
     )
@@ -50,7 +82,7 @@ export const PlaylistsPage = () => {
   return (
     <div className={s.container}>
       <h1>Playlists page</h1>
-      <CreatePlaylistForm onSuccess={()=>setCurrentPage(1)}/>
+      <CreatePlaylistForm onSuccess={() => setCurrentPage(1)}/>
       <input
         type="search"
         placeholder={'Search playlist by title'}
