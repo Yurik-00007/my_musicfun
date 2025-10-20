@@ -1,6 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
-import {toast} from "react-toastify";
-import {isErrorWithDetailArray, isErrorWithProperty, trimToMaxLength} from "@/common/utils";
+import {handleErrors} from "@/common/utils";
 
 export const baseApi = createApi({
   reducerPath: 'baseApi',
@@ -25,19 +24,10 @@ export const baseApi = createApi({
       // },
     })(args, api, extraOptions)
 
-    //error : {
-    // data : {
-    // message: "ENOENT: no such file or directory, stat
-    // '/home/nod…st/spotifun/dist/apps/spotifun/public/index.html'",
-    // error: 'Not Found',
-    // statusCode: 404
-    // }
-    // status : 404
-    // }
-
-
     if (result.error) {
       // debugger
+      handleErrors(result.error)
+/*
       switch (result.error.status) {
         case 'FETCH_ERROR':
         case 'PARSING_ERROR':
@@ -90,6 +80,7 @@ export const baseApi = createApi({
             toast('Some error occurred', {type: "error", theme: 'colored'})
           }
       }
+*/
     }
 
     return result
