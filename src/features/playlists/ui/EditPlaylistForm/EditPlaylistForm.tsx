@@ -19,8 +19,9 @@ export const EditPlaylistForm = ({playlistId, setPlaylistId, editPlaylist, regis
       return
     }
     updatePlaylist({playlistId, body})
-      .unwrap()
-      .then(() => setPlaylistId(null))
+      // .unwrap()
+      // .then(() => setPlaylistId(null))
+    setPlaylistId(null)
   }
 
 
