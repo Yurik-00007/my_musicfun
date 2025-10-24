@@ -43,7 +43,7 @@ export const handleErrors = (error: FetchBaseQueryError) => {
         }
         break
       case 429:
-      case 401:
+      // case 401:
         // if (isErrorWithMessage(result.error.data)) {
         //   toast(result.error.data.message, { type: 'error', theme: 'colored' })
         // } else {
@@ -58,6 +58,17 @@ export const handleErrors = (error: FetchBaseQueryError) => {
         }
         break
       case 400:
+        if (isErrorWithDetailArray(error.data)) {
+          const errorMassage=error.data.errors[0].detail
+          if(errorMassage.includes('refreshToken')){
+            return
+          }
+          errorToast(trimToMaxLength(error.data.errors[0].detail))
+        } else {
+          // toast(JSON.stringify(error.data), {type: 'error', theme: 'colored'})
+          errorToast(JSON.stringify(error.data))
+        }
+        break
       case 403:
         if (isErrorWithDetailArray(error.data)) {
           // toast(trimToMaxLength(error.data.errors[0].detail), {type: 'error', theme: 'colored'})
