@@ -15,7 +15,7 @@ const playlistsApi = baseApi.injectEndpoints({
       fetchPlaylists: build.query<PlaylistsResponse, FetchPlaylistsArgs>({
         providesTags: ['Playlist'],
         query: (params) => ({
-          url: `playlists`,
+          url: `/playlists`,
           params
         })
         /*
@@ -32,7 +32,7 @@ const playlistsApi = baseApi.injectEndpoints({
         invalidatesTags: ['Playlist'],
         query: (body) => ({
           method: 'post',
-          url: `playlists`,
+          url: `/playlists`,
           body
         }),
       }),
@@ -49,7 +49,7 @@ const playlistsApi = baseApi.injectEndpoints({
           // console.log('4')
           return ({
             method: 'put',
-            url: `playlists/${playlistId}`,
+            url: `/playlists/${playlistId}`,
             body
           });
         },
@@ -156,7 +156,7 @@ const playlistsApi = baseApi.injectEndpoints({
           formData.append('file', file)
           return ({
             method: 'post',
-            url: `playlists/${playlistId}/images/main`,
+            url: `/playlists/${playlistId}/images/main`,
             body: formData
           });
         },
@@ -165,7 +165,7 @@ const playlistsApi = baseApi.injectEndpoints({
         invalidatesTags: ['Playlist'],
         query: ({playlistId}) => ({
           method: 'delete',
-          url: `playlists/${playlistId}/images/main`,
+          url: `/playlists/${playlistId}/images/main`,
         }),
       }),
     })

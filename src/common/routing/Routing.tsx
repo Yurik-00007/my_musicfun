@@ -6,6 +6,7 @@ import {TracksPage} from "@/features/tracks/ui/TracksPage.tsx";
 import {PageNotFound} from "@/common/components";
 import {ProfilePage} from "@/features/auth/ui/ProfilePage/ProfilePage.tsx";
 import {Path} from "@/common/constants";
+import {OAuthCallback} from "@/features/auth/ui/OAuthCallback/OAuthCallback.tsx";
 
 export const Routing = () => (
   <Routes>
@@ -14,5 +15,6 @@ export const Routing = () => (
     <Route path={Path.Tracks} element={<TracksPage/>}/>
     <Route path={Path.Profile} element={<ProfilePage/>}/>
     <Route path={Path.NotFound} element={<PageNotFound/>}/>
+    <Route path={Path.OAuthRedirect} element={<OAuthCallback/>}/>
   </Routes>
 )
