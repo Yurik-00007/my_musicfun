@@ -1,27 +1,41 @@
-import {baseApi} from "@/app/api/baseApi.ts";
-import type {FetchTracksArgs, FetchTracksResponse} from "@/features/tracks/api/tracksApi.types.ts";
-import {PaginationType} from "@/common/enums";
+import { baseApi } from "@/app/api/baseApi.ts";
+import type {
+  FetchTracksArgs,
+  FetchTracksResponse,
+} from "@/features/tracks/api/tracksApi.types.ts";
+import { PaginationType } from "@/common/enums";
+import { withZodCatch } from "@/common/utils";
+import { fetchTracksResponseSchema } from "@/features/tracks/model/tracks.schemas.ts";
 
 export const tracksApi = baseApi.injectEndpoints({
-  endpoints: build => ({
-        fetchTracks: build.infiniteQuery<FetchTracksResponse, FetchTracksArgs, string | null>({
-          infiniteQueryOptions: {
-            initialPageParam: null,
-            getNextPageParam: (lastPage) => {
-              // debugger
-              // return '1'
-              return lastPage.meta.nextCursor || null
-            }
+  endpoints: (build) => ({
+    fetchTracks: build.infiniteQuery<
+      FetchTracksResponse,
+      FetchTracksArgs,
+      string | null
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: null,
+        getNextPageParam: (lastPage) => {
+          // debugger
+          // return '1'
+          return lastPage.meta.nextCursor || null;
+        },
+      },
+      ...withZodCatch(fetchTracksResponseSchema),
+      query: ({ pageParam }) => {
+        // debugger
+        return {
+          url: "/playlists/tracks",
+          params: {
+            cursor: pageParam,
+            pageSize: 5,
+            paginationType: PaginationType.CURSOR,
           },
-          query: ({pageParam}) => {
-            // debugger
-            return {
-              url: '/playlists/tracks',
-              params: {cursor: pageParam, pageSize: 5, paginationType: PaginationType.CURSOR}
-            };
-          }
-        }),
-/*
+        };
+      },
+    }),
+    /*
     fetchTracks: build.infiniteQuery<FetchTracksResponse, FetchTracksArgs, number>({
       infiniteQueryOptions: {
         initialPageParam: 1,
@@ -39,9 +53,7 @@ export const tracksApi = baseApi.injectEndpoints({
       },
     }),
 */
-
-
   }),
-})
+});
 
-export const {useFetchTracksInfiniteQuery} = tracksApi
+export const { useFetchTracksInfiniteQuery } = tracksApi;

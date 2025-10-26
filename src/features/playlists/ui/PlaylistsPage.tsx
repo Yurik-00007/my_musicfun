@@ -12,7 +12,7 @@ export const PlaylistsPage = () => {
 
   const debounceSearch = useDebounceValue(search);
 
-  const { data, isLoading, isError, error } = useFetchPlaylistsQuery(
+  const { data, isLoading } = useFetchPlaylistsQuery(
     { search: debounceSearch, pageNumber: currentPage, pageSize },
     // {refetchOnFocus: true}//точечный запрос: будут работать только этот запрос, в api запрос не сработает.
     // {refetchOnReconnect: true}//точечный запрос: будут работать только этот запрос, в api запрос не сработает.
@@ -27,7 +27,7 @@ export const PlaylistsPage = () => {
   );
 
   //
-  console.log({ error, isError });
+  // console.log({ error, isError });
   //error : {
   // data : {
   // message: "ENOENT: no such file or directory, stat

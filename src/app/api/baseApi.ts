@@ -1,9 +1,9 @@
-import {createApi} from '@reduxjs/toolkit/query/react'
-import {baseQueryWithReauth} from "@/app/api/baseQueryWithReauth.ts";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithReauth } from "@/app/api/baseQueryWithReauth.ts";
 
 export const baseApi = createApi({
-  reducerPath: 'baseApi',
-  tagTypes: ['Playlist', 'Auth'],
+  reducerPath: "baseApi",
+  tagTypes: ["Playlist", "Auth"],
   baseQuery: baseQueryWithReauth,
   /*
     // В baseQuery создаем функцию, которая вернет функцию и будет само вызывающаяся. При каждом запросе будем попадать в места где debugger.
@@ -101,4 +101,7 @@ export const baseApi = createApi({
   // refetchOnReconnect: true,
   //В RTK Query refetchOnReconnect управляет повторным запросом данных, когда приложение или браузер восстанавливает соединение с интернетом после его потери. Лучше точечное использование на определенный url который вызывается в компоненте хука, а не в api запроса.
   endpoints: () => ({}),
-})
+  // skipSchemaValidation: process.env.NODE_ENV === "production",
+  // skipSchemaValidation: process.env.NODE_ENV === "development",
+});
+// console.log(process.env.NODE_ENV);

@@ -1,12 +1,11 @@
-import {useFetchTracksInfiniteQuery} from "@/features/tracks/api/tracksApi.ts";
-import {useInfiniteScroll} from "@/common/hooks";
-import {TracksList} from "@/features/tracks/ui/TracksList/TracksList.tsx";
-import {LoadingTrigger} from "@/features/tracks/ui/LoadingTrigger/LoadingTrigger.tsx";
+import { useFetchTracksInfiniteQuery } from "@/features/tracks/api/tracksApi.ts";
+import { useInfiniteScroll } from "@/common/hooks";
+import { TracksList } from "@/features/tracks/ui/TracksList/TracksList.tsx";
+import { LoadingTrigger } from "@/features/tracks/ui/LoadingTrigger/LoadingTrigger.tsx";
 
 export const TracksPage = () => {
-
-
-  const {data, hasNextPage, isFetching, isFetchingNextPage, fetchNextPage} = useFetchTracksInfiniteQuery()
+  const { data, hasNextPage, isFetching, isFetchingNextPage, fetchNextPage } =
+    useFetchTracksInfiniteQuery({});
   // console.log(data)//{pages: Array(1), pageParams: Array(1)}
   /*
     const pages1 = data?.pages.map((page) => page.data) || []//: TrackData[][]
@@ -33,7 +32,7 @@ export const TracksPage = () => {
     // ]
   */
 
-  const pages = data?.pages.flatMap((page) => page.data) || []//: TrackData[]
+  const pages = data?.pages.flatMap((page) => page.data) || []; //: TrackData[]
   // console.log(pages)
   // [
   // {id: '88133ec1-f82d-4fbb-b53b-5138b6fc7b90', type: 'tracks', attributes: {…}, relationships: {…}}
@@ -42,7 +41,9 @@ export const TracksPage = () => {
   // {id: '50587ef5-d06d-4d3e-9e81-821d20f30d2e', type: 'tracks', attributes: {…}, relationships: {…}}
   // {id: '8c81e17a-281a-4015-9066-51cf3266ad7a', type: 'tracks', attributes: {…}, relationships: {…}}
   // ]
-  {/*{data?.pages[0].data.map(track => {*/}
+  {
+    /*{data?.pages[0].data.map(track => {*/
+  }
 
   /*
     const observerRef = useRef<HTMLDivElement>(null)
@@ -116,12 +117,16 @@ export const TracksPage = () => {
     }, [loadMoreHandler])
   */
 
-  const {observerRef} = useInfiniteScroll({hasNextPage, isFetching, fetchNextPage})
+  const { observerRef } = useInfiniteScroll({
+    hasNextPage,
+    isFetching,
+    fetchNextPage,
+  });
 
   return (
     <div>
       <h1>Tracks page</h1>
-      <TracksList tracks={pages}/>
+      <TracksList tracks={pages} />
 
       {/*
       {!isLoading && (
@@ -139,12 +144,13 @@ export const TracksPage = () => {
         </>
       )}
 */}
-      {
-        hasNextPage &&
-        <LoadingTrigger isFetchingNextPage={isFetchingNextPage} observerRef={observerRef}/>
-      }
+      {hasNextPage && (
+        <LoadingTrigger
+          isFetchingNextPage={isFetchingNextPage}
+          observerRef={observerRef}
+        />
+      )}
       {!hasNextPage && pages.length > 0 && <p>Nothing more to load</p>}
-
     </div>
-  )
-}
+  );
+};
