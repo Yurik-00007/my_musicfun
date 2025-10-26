@@ -27,7 +27,7 @@ export const PlaylistsPage = () => {
   );
 
   //
-  console.log({ error, isError });
+  // console.log({ error, isError });
   //error : {
   // data : {
   // message: "ENOENT: no such file or directory, stat
