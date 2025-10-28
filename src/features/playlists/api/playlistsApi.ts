@@ -1,6 +1,8 @@
 import type {
   CreatePlaylistArgs,
   FetchPlaylistsArgs,
+  PlaylistCreatedEvent,
+  PlaylistUpdatedEvent,
   UpdatePlaylistArgs,
 } from "@/features/playlists/api/playlistsApi.types.ts";
 import { baseApi } from "@/app/api/baseApi.ts";
@@ -10,16 +12,21 @@ import {
   playlistsResponseSchema,
 } from "@/features/playlists/model/playlists.schemas.ts";
 import { withZodCatch } from "@/common/utils";
+import { SOCKET_EVENTS } from "@/common/constants";
+import { subscribeToEvent } from "@/common/socket";
 
 const playlistsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     // fetchPlaylists: build.query<PlaylistsResponse, FetchPlaylistsArgs>({
     fetchPlaylists: build.query({
       providesTags: ["Playlist"],
-      query: (params: FetchPlaylistsArgs) => ({
-        url: `/playlists`,
-        params,
-      }),
+      query: (params: FetchPlaylistsArgs) => {
+        // debugger;
+        return {
+          url: `/playlists`,
+          params,
+        };
+      },
       /*
           query: () => {
           return{
@@ -40,7 +47,176 @@ const playlistsApi = baseApi.injectEndpoints({
         };
     },*/
       ...withZodCatch(playlistsResponseSchema),
+      //Время хранения данных в кэше, по умолчанию, составляет 60 секунд. Но это время можно настраивать с помощью keepUnusedDataFor(по умолчанию)
+      keepUnusedDataFor: 0,
+      //отменяет zod проверку
       // skipSchemaValidation: process.env.NODE_ENV === "production",
+
+      /*
+      // 🧩 Этот хук RTK Query вызывается, когда создаётся новый кэш-запрос.
+      // Он позволяет "подписаться" на события в реальном времени и
+      // вручную изменять кэшированные данные без повторных запросов.
+      onCacheEntryAdded: async (
+        _arg,
+        {
+          // cacheDataLoaded,
+          updateCachedData,
+          // dispatch,
+          cacheEntryRemoved,
+        },
+      ) => {
+        // debugger;
+        //🧠 Ожидаем, пока запрос завершит загрузку данных в кэш.
+        // cacheDataLoaded — промис, который резолвится, когда fetchPlaylists получает первый ответ от API.
+        // const res = await cacheDataLoaded;
+        // console.log(res); //{data: [{…}, {…}, {…}, {…}, {…}, {…}, {…}] meta : {page: 1, pageSize: 20, totalCount: 7, pagesCount: 1}}
+
+        // 🌐 Создаём новое подключение к WebSocket-серверу через socket.io.
+        // Это позволит получать обновления плейлистов в реальном времени.
+        const socket = io(import.meta.env.VITE_SOCKET_URL, {
+          path: "/api/1.0/ws", // путь, на котором сервер слушает WebSocket-подключения(по умолчанию socket.io)
+          transports: ["websocket"], // используем только WebSocket без fallback на long polling
+        });
+
+        // debugger;
+        // ✅ Лог в консоль, чтобы убедиться, что подключение установлено.
+        socket.on("connect", () =>
+          console.log("✅ Socket connected to server "),
+        );
+
+        //📡 Подписывается на событие "tracks.playlist-created", которое сообщает о создании нового плейлиста.
+        // Сервер отправляет это событие, когда создаётся новый плейлист.
+        socket.on(
+          SOCKET_EVENTS.PLAYLIST_CREATED,
+          (msg: PlaylistCreatedEvent) => {
+            /// Из сообщения извлекаем новый объект плейлиста
+            const newPlaylist = msg.payload.data;
+
+            // 🧩 updateCachedData — специальная функция RTK Query,
+            // которая позволяет безопасно изменять данные, хранящиеся в кэше.
+            updateCachedData((state) => {
+              // current(state) — утилита из Immer, позволяет получить «чистую» копию состояния для отладки
+              const res = current(state);
+
+              console.log(res);
+              // Удаляем последний элемент списка, чтобы ограничить количество элементов на странице
+              state.data.pop();
+              // Добавляем новый плейлист в начало массива (новые — сверху)
+              state.data.unshift(newPlaylist);
+              // Увеличиваем общее количество элементов
+              state.meta.totalCount += 1;
+              // Пересчитываем количество страниц
+              state.meta.pagesCount = Math.ceil(
+                state.meta.totalCount / state.meta.pageSize,
+              );
+              // 🧠 Таким образом, UI сразу обновляется без повторного запроса к серверу.
+              // debugger;
+            });
+            // ❌ Альтернатива — сбросить кэш по тегу, чтобы RTK Query заново загрузил данные:
+            // dispatch(playlistsApi.util.invalidateTags(["Playlist"]));
+          },
+        );
+
+        // 🚪 Ожидаем, пока кэш этого запроса перестанет использоваться (компонент размонтируется или данные устареют).
+        // Когда это произойдёт — RTK Query автоматически вызовет этот await,
+        // и можно будет безопасно закрыть WebSocket (чтобы не держать открытые соединения).
+        await cacheEntryRemoved;
+
+        socket.on("disconnect", () => {
+          console.log("❌ Connection destroyed " + socket.connected);
+        });
+      },
+*/
+
+      onCacheEntryAdded: async (
+        _arg,
+        { cacheDataLoaded, updateCachedData, cacheEntryRemoved },
+      ) => {
+        await cacheDataLoaded;
+
+        const unsubscribes = [
+          subscribeToEvent<PlaylistCreatedEvent>(
+            SOCKET_EVENTS.PLAYLIST_CREATED,
+            (msg) => {
+              // console.log("1");
+              const newPlaylist = msg.payload.data;
+
+              updateCachedData((state) => {
+                state.data.pop();
+                state.data.unshift(newPlaylist);
+                state.meta.totalCount += 1;
+                state.meta.pagesCount = Math.ceil(
+                  state.meta.totalCount / state.meta.pageSize,
+                );
+              });
+            },
+          ),
+          subscribeToEvent<PlaylistUpdatedEvent>(
+            SOCKET_EVENTS.PLAYLIST_UPDATED,
+            (msg) => {
+              // console.log("1");
+              const updatedPlaylist = msg.payload.data;
+              const playlistId = updatedPlaylist.id;
+              // debugger;
+              updateCachedData((state) => {
+                // debugger;
+                const index = state.data.findIndex((p) => p.id === playlistId);
+                if (index !== -1)
+                  state.data[index] = {
+                    ...state.data[index],
+                    ...updatedPlaylist,
+                  };
+              });
+            },
+          ),
+        ];
+
+        /*
+        const unsubscribe = subscribeToEvent<PlaylistCreatedEvent>(
+          SOCKET_EVENTS.PLAYLIST_CREATED,
+          (msg) => {
+            // console.log("1");
+            const newPlaylist = msg.payload.data;
+
+            updateCachedData((state) => {
+              state.data.pop();
+              state.data.unshift(newPlaylist);
+              state.meta.totalCount += 1;
+              state.meta.pagesCount = Math.ceil(
+                state.meta.totalCount / state.meta.pageSize,
+              );
+            });
+          },
+        );
+
+        const unsubscribe2 = subscribeToEvent<PlaylistUpdatedEvent>(
+          SOCKET_EVENTS.PLAYLIST_UPDATED,
+          (msg) => {
+            // console.log("1");
+            const updatedPlaylist = msg.payload.data;
+            const playlistId = updatedPlaylist.id;
+            // debugger;
+            updateCachedData((state) => {
+              // debugger;
+              const index = state.data.findIndex((p) => p.id === playlistId);
+              if (index !== -1)
+                state.data[index] = {
+                  ...state.data[index],
+                  ...updatedPlaylist,
+                };
+            });
+          },
+        );
+*/
+
+        await cacheEntryRemoved;
+        unsubscribes.forEach((unsubscribe) => unsubscribe());
+        /*
+        unsubscribe();
+        // console.log("6");
+        unsubscribe2();
+*/
+      },
     }),
     // createPlaylists: build.mutation<PlaylistCreateResponse, CreatePlaylistArgs>(
     createPlaylists: build.mutation({

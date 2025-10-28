@@ -50,9 +50,9 @@ export const trackRelationshipsSchema = z.object({
 export const tracksIncludedSchema = z.object({
   id: z.string(),
   type: z.literal("artists"),
-  attributes: {
+  attributes: z.object({
     name: z.string(),
-  },
+  }),
 });
 
 export const trackDataSchema = z.object({
