@@ -95,3 +95,13 @@ export type UpdatePlaylistArgs = {
   description: string;
   tagIds: string[];
 };
+
+export type PlaylistCreatedEvent = {
+  type: "tracks.playlist-created";
+  payload: PlaylistCreateResponse;
+};
+
+export type PlaylistUpdatedEvent = {
+  type: "tracks.playlist-created";
+  payload: PlaylistCreateResponse;
+};
